@@ -1,45 +1,81 @@
-# PRISM — AI Insurance Companion
+# PRISM
 
-> **Intelligent Health Insurance Navigation & Claim Preparation for Indian Policyholders**
+AI Insurance Companion
 
-PRISM is a comprehensive, production-hardened platform designed to help policyholders understand complex health insurance documents, extract key policy limits and waiting periods, consult an AI assistant grounded strictly in verified policy clauses, and navigate the claim preparation process.
+## What is PRISM?
 
----
+PRISM helps users understand their health-insurance policies, explore coverage information, ask grounded questions about their policy, organize documents, and prepare for claims.
 
-## Architecture Overview
-
-```
-                          ┌───────────────────────────┐
-                          │   Supabase Auth / DB /    │
-                          │      Storage / Vectors    │
-                          └─────────────┬─────────────┘
-                                        │
-             ┌──────────────────────────┼──────────────────────────┐
-             │                          │                          │
-             ▼                          ▼                          ▼
-     ┌───────────────┐          ┌───────────────┐          ┌───────────────┐
-     │  FastAPI      │◄─────────┤  Next.js      │          │  Flutter      │
-     │  Backend      │          │  Web App      │          │  Android App  │
-     │  (RAG / Groq) │◄─────────┼───────────────┼──────────┤  (Native UI)  │
-     └───────────────┘          └───────────────┘          └───────────────┘
-```
-
-The system comprises four tightly integrated components:
-
-1. **`backend/`**: FastAPI high-performance Python service handling PDF parsing (PyMuPDF), document chunking, hybrid vector embeddings, and LLM reasoning via Groq with strict citation grounding.
-2. **`web/`**: Next.js (App Router, Tailwind CSS, TypeScript) responsive web dashboard featuring policy vaults, claims workspace, interactive RAG Q&A, and policy comparisons.
-3. **`mobile/`**: Flutter Android mobile application providing camera-based policy scanning, native biometric/session persistence, policy details, claims checklist, and push-ready notifications.
-4. **`docs/`**: Architecture diagrams, API specifications, and deployment runbooks for Railway and Vercel.
+Indian health insurance contracts are often dense, multi-page legal documents filled with conditional clauses, sub-limits, waiting periods, and deductibles. PRISM serves as an intelligent companion that parses policy wordings, indexes coverage clauses, and provides verified, citation-backed answers whenever policyholders have questions or need to prepare for hospital admission.
 
 ---
 
-## Core Capabilities
+## Core capabilities
 
-- **Policy Document Ingestion**: Upload multi-page insurer policy wordings via PDF or mobile camera capture.
-- **RAG-Powered Clause Search**: Ephemeral vector search over policy sections; questions are answered strictly from the uploaded policy text with exact clause citations.
-- **Claims Preparation Assistant**: Pre-claim checklists, required documentation tracking, hospital cashless guidance, and preparation timeline support.
-- **Zero-Hallucination Guardrails**: When policy wording does not cover a question or evidence is insufficient, PRISM explicitly refuses to guess and flags missing information.
-- **Dark & Light Mode Support**: Modern, accessible UI tailored for both desktop browsers and Android mobile devices.
+- **Policy management**: Centralized digital vault for health insurance policies, insurer details, sum insured, and renewal timelines.
+- **Policy document processing**: Server-side PDF extraction (PyMuPDF) and structure detection for schedules, Customer Information Sheets (CIS), and terms.
+- **Grounded Ask PRISM**: Natural language Q&A strictly grounded in the user's uploaded policy documents.
+- **Policy evidence and citations**: Every answer references exact policy section titles and page numbers for transparent self-verification.
+- **Claims preparation**: Structured checklists for cashless pre-authorization, planned hospitalization, and reimbursement filings.
+- **Claim document organization**: Upload and associate discharge summaries, hospital bills, pharmacy receipts, and diagnostic reports.
+- **Notifications**: Automated alerts for policy renewals and claim document readiness.
+- **Android application**: Native mobile experience with camera-based physical document scanning and session persistence.
+
+---
+
+## Architecture
+
+PRISM is organized around a unified, privacy-conscious cloud architecture:
+
+```
+Flutter Android (Mobile) / Next.js (Web)
+                ↓
+         FastAPI Backend
+                ↓
+    Supabase (Auth / DB / Storage)
+                ↓
+       Document Processing
+                ↓
+Embeddings (BAAI/bge-small-en-v1.5) / Retrieval (pgvector)
+                ↓
+        Groq (LLM Inference)
+```
+
+- **Client Layer**:
+  - **Flutter Android**: Native mobile app supporting offline session persistence, camera document scanning, and dark/light appearance.
+  - **Next.js Web**: Desktop and tablet responsive interface built with TypeScript, Tailwind CSS, and App Router.
+- **API & Business Logic**:
+  - **FastAPI**: Containerized Python service orchestrating text extraction, vector embedding, retrieval, and LLM reasoning.
+- **Data & Security**:
+  - **Supabase**: PostgreSQL database with Row-Level Security (RLS) enforcing tenant isolation (`auth.uid() = user_id`), pgvector similarity search, and private storage buckets.
+- **AI & Retrieval**:
+  - **SentenceTransformers**: Local vector embedding computation (384 dimensions).
+  - **Groq Cloud API**: Server-side inference for natural language response generation using retrieved clause excerpts.
+
+*(Note: Client applications communicate strictly via public anonymous tokens and authenticated JWTs. Administrative service-role keys and database passwords are never bundled in client builds).*
+
+---
+
+## Android
+
+PRISM for Android is distributed directly as an APK package outside Google Play for testing and independent distribution.
+
+### How to Download & Install
+
+1. Visit the verified GitHub Release:  
+   **Release Page**: [PRISM v1.0.0 Release](https://github.com/bhavyaku11/PRISM---Application/releases/tag/v1.0.0)  
+   **Direct APK Download**: [Download PRISM-v1.0.0-Android.apk](https://github.com/bhavyaku11/PRISM---Application/releases/download/v1.0.0/PRISM-v1.0.0-Android.apk)
+2. On your Android device (Android 7.0 / API 24 or newer), open the downloaded APK file.
+3. If prompted, allow installation from your browser or file manager (standard for direct APK distribution outside Google Play).
+4. Launch PRISM and sign in or create an account to begin.
+
+### Build Specifications
+
+- **Package ID**: `com.prism.app.prism_mobile`
+- **Version**: `1.0.0` (Build `1`)
+- **Package Format**: Universal Release APK
+- **Signing**: APK Signature Scheme v2 (Release Keystore)
+- **Target OS**: Android 7.0 – Android 16 (API 24 to API 36)
 
 ---
 
@@ -48,31 +84,35 @@ The system comprises four tightly integrated components:
 ```
 PRISM/
 ├── backend/            # FastAPI service, Groq integration, pgvector RAG
-│   ├── app/            # Application logic (API routes, RAG, core services)
-│   ├── tests/          # Comprehensive test suites
-│   └── requirements.txt
-├── web/                # Next.js 15+ frontend application
-│   ├── app/            # App Router pages and API routes
-│   ├── components/     # UI components and views
-│   └── package.json
+│   ├── app/            # API routes, extraction, chunking, AI services
+│   └── tests/          # Pytest integration and unit test suite
+├── web/                # Next.js web application (App Router, Tailwind CSS)
+│   ├── app/            # Next.js routes (landing, /privacy, /terms, /delete-account)
+│   └── components/     # UI components and layouts
 ├── mobile/             # Flutter Android application
-│   ├── lib/            # Flutter source code (Feature-first architecture)
-│   ├── android/        # Android native Gradle configuration
-│   ├── test/           # Unit and widget test suite (121 tests)
-│   └── pubspec.yaml
-└── docs/               # System documentation & deployment guides
+│   ├── lib/            # Feature-first Dart codebase
+│   └── test/           # Widget & unit test suite (121 tests)
+└── docs/               # Architecture specifications & database migrations
 ```
 
 ---
 
-## Security & Privacy Highlights
+## Disclaimer
 
-- **Client-Safe Credentials**: Mobile and web clients only hold public Supabase anonymous keys; no administrative `service_role` keys or database credentials are bundled into client code.
-- **Ephemeral AI Processing**: Groq LLM inference operates ephemerally; documents are processed for vector indexing without using user data for foundation model training.
-- **Signer Verification**: Android release APK is compiled and signed with a dedicated release keystore using APK Signature Scheme v2.
+PRISM provides informational and decision-support functionality.
+
+PRISM does **not**:
+- guarantee insurance claim approval, reimbursement amounts, or dispute outcomes
+- provide medical diagnosis, clinical evaluations, or healthcare advice
+- provide formal legal advice or legal representation
+- replace your official insurance policy schedule, insurer, or TPA
+- directly submit or file insurance claims on your behalf
+
+All claim decisions and contractual interpretations remain the sole and exclusive jurisdiction of your licensed insurance company and designated Third-Party Administrator (TPA).
 
 ---
 
 ## License
 
 Proprietary — All Rights Reserved.
+
