@@ -86,7 +86,7 @@ void main() {
 
       final apiClient = ApiClient(
         client: mockClient,
-        baseUrl: 'https://prism-backend-production.up.railway.app',
+        baseUrl: 'https://prism-application-production.up.railway.app',
       );
 
       expect(

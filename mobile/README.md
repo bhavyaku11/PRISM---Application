@@ -44,7 +44,7 @@ Client-safe anonymous keys are defined in `lib/core/config/app_config.dart`. The
 ### FastAPI Backend URL Resolution
 `AppConfig.apiBaseUrl` dynamically selects the optimal endpoint:
 1. **Command-line override**: Any `--dart-define=API_BASE_URL=https://...` provided at build time takes top priority.
-2. **Release builds (`kReleaseMode`)**: Automatically defaults to the deployed production Railway service (`https://prism-backend-production.up.railway.app`).
+2. **Release builds (`kReleaseMode`)**: Automatically defaults to the deployed production Railway service (`https://prism-application-production.up.railway.app`).
 3. **Debug builds**: Automatically defaults to `http://10.0.2.2:8000` (Android emulator loopback to localhost).
 
 ---

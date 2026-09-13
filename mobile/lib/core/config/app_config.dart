@@ -26,7 +26,7 @@ class AppConfig {
       return _envApiBaseUrl;
     }
     if (kReleaseMode) {
-      return 'https://prism-backend-production.up.railway.app';
+      return 'https://prism-application-production.up.railway.app';
     }
     return 'http://10.0.2.2:8000';
   }
