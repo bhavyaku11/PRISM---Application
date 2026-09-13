@@ -42,13 +42,17 @@ class ApiClient {
   }
 
   Future<dynamic> get(String path, {Map<String, String>? headers}) async {
-    final uri = Uri.parse('$_baseUrl$path');
+    final cleanPath = path.startsWith('/') ? path : '/$path';
+    final uri = Uri.parse('$_baseUrl$cleanPath');
     try {
       final response = await _client
           .get(uri, headers: _buildHeaders(headers))
           .timeout(_timeout);
       return _handleResponse(response);
     } on SocketException catch (e) {
+      throw NetworkError(
+          'Unable to connect to server. Check your connection.', e);
+    } on http.ClientException catch (e) {
       throw NetworkError(
           'Unable to connect to server. Check your connection.', e);
     } on TimeoutException catch (e) {
@@ -61,7 +65,8 @@ class ApiClient {
 
   Future<dynamic> post(String path,
       {Map<String, dynamic>? body, Map<String, String>? headers}) async {
-    final uri = Uri.parse('$_baseUrl$path');
+    final cleanPath = path.startsWith('/') ? path : '/$path';
+    final uri = Uri.parse('$_baseUrl$cleanPath');
     try {
       final response = await _client
           .post(
@@ -74,6 +79,9 @@ class ApiClient {
     } on SocketException catch (e) {
       throw NetworkError(
           'Unable to connect to server. Check your connection.', e);
+    } on http.ClientException catch (e) {
+      throw NetworkError(
+          'Unable to connect to server. Check your connection.', e);
     } on TimeoutException catch (e) {
       throw NetworkError('Request timed out. Please try again.', e);
     } catch (e) {
@@ -83,7 +91,8 @@ class ApiClient {
   }
 
   Future<dynamic> delete(String path, {Map<String, String>? headers}) async {
-    final uri = Uri.parse('$_baseUrl$path');
+    final cleanPath = path.startsWith('/') ? path : '/$path';
+    final uri = Uri.parse('$_baseUrl$cleanPath');
     try {
       final response = await _client
           .delete(uri, headers: _buildHeaders(headers))
@@ -92,12 +101,48 @@ class ApiClient {
     } on SocketException catch (e) {
       throw NetworkError(
           'Unable to connect to server. Check your connection.', e);
+    } on http.ClientException catch (e) {
+      throw NetworkError(
+          'Unable to connect to server. Check your connection.', e);
     } on TimeoutException catch (e) {
       throw NetworkError('Request timed out. Please try again.', e);
     } catch (e) {
       if (e is AppError) rethrow;
       throw ServerError('An unexpected network error occurred.', e);
     }
+  }
+
+  String? _extractErrorMessage(dynamic decoded) {
+    if (decoded is Map) {
+      // 1. Check 'detail' (FastAPI standard)
+      final detail = decoded['detail'];
+      if (detail is String && detail.trim().isNotEmpty) {
+        return detail.trim();
+      } else if (detail is List && detail.isNotEmpty) {
+        final msgs = detail
+            .map((item) => item is Map ? item['msg']?.toString() : item.toString())
+            .where((msg) => msg != null && msg.isNotEmpty)
+            .toList();
+        if (msgs.isNotEmpty) return msgs.join(', ');
+      }
+
+      // 2. Check 'error'
+      final error = decoded['error'];
+      if (error is String && error.trim().isNotEmpty) {
+        return error.trim();
+      } else if (error is Map && error['message'] is String) {
+        return (error['message'] as String).trim();
+      }
+
+      // 3. Check 'message' (Railway, PostgREST, etc.)
+      final message = decoded['message'];
+      if (message is String && message.trim().isNotEmpty) {
+        return message.trim();
+      }
+    } else if (decoded is String && decoded.trim().isNotEmpty) {
+      return decoded.trim();
+    }
+    return null;
   }
 
   dynamic _handleResponse(http.Response response) {
@@ -110,28 +155,37 @@ class ApiClient {
       decoded = null;
     }
 
+    final rawMessage = _extractErrorMessage(decoded);
+
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return decoded;
+    } else if (response.statusCode == 400) {
+      throw ValidationError(
+          rawMessage ?? 'Invalid request data.');
     } else if (response.statusCode == 401) {
-      throw AuthError('Your session has expired. Please sign in again.');
-    } else if (response.statusCode == 403) {
-      final message =
-          decoded is Map ? decoded['detail'] ?? decoded['error'] : null;
       throw AuthError(
-          message ?? 'Access denied. You do not have permission to access this resource.');
+          rawMessage ?? 'Your session has expired. Please sign in again.');
+    } else if (response.statusCode == 403) {
+      throw AuthError(
+          rawMessage ?? 'Access denied. You do not have permission to access this resource.');
     } else if (response.statusCode == 404) {
-      final message =
-          decoded is Map ? decoded['detail'] ?? decoded['error'] : null;
-      throw NotFoundError(message ?? 'Resource not found.');
+      if (rawMessage != null &&
+          (rawMessage.toLowerCase().contains('application not found') ||
+           rawMessage.toLowerCase().contains('service not found'))) {
+        throw ServerError(
+            'PRISM AI service is temporarily unavailable. Please try again shortly. ($rawMessage)');
+      }
+      throw NotFoundError(rawMessage ?? 'Resource not found.');
     } else if (response.statusCode == 422) {
-      final message =
-          decoded is Map ? decoded['detail'] ?? decoded['error'] : null;
-      throw ValidationError(message ?? 'Invalid request data.');
+      throw ValidationError(rawMessage ?? 'Invalid request data.');
+    } else if (response.statusCode == 502 ||
+        response.statusCode == 503 ||
+        response.statusCode == 504) {
+      throw ServerError(rawMessage ??
+          'PRISM service is temporarily unavailable (${response.statusCode}). Please try again shortly.');
     } else {
-      final message =
-          decoded is Map ? decoded['detail'] ?? decoded['error'] : null;
       throw ServerError(
-          message ?? 'Server error occurred (${response.statusCode}).');
+          rawMessage ?? 'Server error occurred (${response.statusCode}).');
     }
   }
 
