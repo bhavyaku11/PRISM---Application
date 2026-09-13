@@ -29,16 +29,16 @@ export default function DeleteAccountPage() {
               Account Control
             </span>
             <h1 className="text-3xl font-bold mt-2 text-[#0B1220] dark:text-white">
-              Delete PRISM Account & Personal Data
+              Delete PRISM Account &amp; Personal Data
             </h1>
             <p className="text-sm text-slate-500 mt-2">
-              Google Play Compliance &amp; Data Subject Rights
+              Data Subject Rights &amp; Permanent Erasure Procedure
             </p>
           </div>
 
           <div className="space-y-6 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
             <p>
-              In accordance with Google Play developer policies and applicable personal data protection laws, PRISM users have the right to request the permanent deletion of their account and all associated personal records.
+              PRISM users have the right to request the permanent deletion of their account and all associated personal records stored within our systems.
             </p>
 
             <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800">
@@ -46,9 +46,9 @@ export default function DeleteAccountPage() {
                 What data will be permanently deleted:
               </h3>
               <ul className="list-disc pl-5 space-y-1 text-xs">
-                <li>Your authenticated account identity and profile details.</li>
+                <li>Your authenticated account identity and profile details in Supabase Auth and database tables.</li>
                 <li>All uploaded insurance policy documents, extracted clauses, and vector embeddings.</li>
-                <li>All claim preparation records, hospital bills, and attached claim documents.</li>
+                <li>All claim preparation records, hospital details, and attached supporting documents.</li>
                 <li>All Q&amp;A chat histories, notifications, and settings preferences.</li>
               </ul>
             </div>
@@ -60,37 +60,34 @@ export default function DeleteAccountPage() {
             <div className="space-y-4">
               <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl">
                 <h4 className="font-semibold text-sm text-[#0B1220] dark:text-white">
-                  Option 1: In-App Settings (Mobile / Web)
+                  Step 1: Immediate In-App Document Deletion (Self-Service)
                 </h4>
-                <p className="text-xs text-slate-500 mt-1">
-                  Navigate to <strong>Settings &rarr; Data Controls &rarr; Account &amp; Data Deletion</strong> in either the PRISM mobile app or web dashboard to view your data retention settings and initiate an erasure ticket.
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  You can immediately delete any individual policy, document, or claim file directly inside the PRISM web app or mobile app. Deleting an item removes the database record, extracted text chunks, vector embeddings, and storage file immediately.
                 </p>
               </div>
 
               <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl">
                 <h4 className="font-semibold text-sm text-[#0B1220] dark:text-white">
-                  Option 2: Direct Email Request
+                  Step 2: Complete Account Closure &amp; Identity Erasure Request
                 </h4>
-                <p className="text-xs text-slate-500 mt-1">
-                  Send an email from your registered PRISM account email address to:
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  To permanently delete your entire user account and all associated data, send an email request from your registered account email address to:
                 </p>
                 <div className="mt-2 p-3 bg-slate-100 dark:bg-slate-950 font-mono text-xs rounded-lg text-slate-800 dark:text-slate-200">
-                  To: privacy@prism.app<br />
-                  Subject: Account &amp; Data Deletion Request<br />
-                  Body: Please permanently delete my PRISM account and all associated policy documents and claims.
+                  To: [PRISM support email — owner must configure]<br />
+                  Subject: PRISM Account Deletion Request<br />
+                  Body: Please permanently delete my PRISM user account and all associated policies, claims, documents, and conversations.
                 </div>
               </div>
             </div>
 
             <div className="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 space-y-2">
               <p>
-                <strong>Verification &amp; SLA:</strong> For security, we verify that the request originates from the verified account owner. Once verified, all cloud records in PostgreSQL and Supabase Storage are permanently purged within <strong>30 calendar days</strong>.
+                <strong>Identity Verification &amp; Processing:</strong> For security, we verify that the deletion request originates from the verified account holder. Upon confirmation, an administrator permanently removes your user record and purges all associated cloud storage files and database records.
               </p>
               <p>
-                Questions? Contact our Data Protection Officer at{' '}
-                <a href="mailto:privacy@prism.app" className="text-[#4F8CFF] underline">
-                  privacy@prism.app
-                </a>.
+                <em>Note: Formal processing timeframe/SLA is subject to administrative policy configuration by the product owner prior to public launch.</em>
               </p>
             </div>
           </div>
@@ -99,3 +96,4 @@ export default function DeleteAccountPage() {
     </div>
   );
 }
+

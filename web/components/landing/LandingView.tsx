@@ -108,7 +108,7 @@ export function LandingView({ userEmail }: LandingViewProps) {
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#667085] dark:text-slate-400 font-medium">
               <span className="inline-flex items-center gap-1.5">
                 <IconShieldCheck size={15} className="text-[#4F8CFF]" />
-                100% Policy Grounded
+                Policy-Grounded Reasoning
               </span>
               <span className="text-slate-300 dark:text-slate-700">&bull;</span>
               <span className="inline-flex items-center gap-1.5">
@@ -475,9 +475,9 @@ export function LandingView({ userEmail }: LandingViewProps) {
             <div className="mt-6 p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/50 flex items-start gap-3">
               <IconInfo size={18} className="text-[#4F8CFF] shrink-0 mt-0.5" />
               <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <strong>Data Handling:</strong> Policy documents and questions are isolated using PostgreSQL Row Level
-                Security (RLS). AI inference operates ephemerally via server-side retrieval-augmented generation without
-                using your personal claims data for public foundation model training.
+                <strong>Data Handling:</strong> Policy documents and questions are protected by PostgreSQL Row-Level
+                Security (RLS) and private storage access controls. AI inference operates server-side via
+                retrieval-augmented generation (RAG) using your uploaded document excerpts.
               </div>
             </div>
           </div>
