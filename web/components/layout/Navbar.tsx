@@ -86,8 +86,8 @@ export function Navbar({ userEmail, profile }: NavbarProps) {
           <div className="flex items-center gap-8">
             <PrismLogo size="md" href={userEmail ? '/dashboard' : '/'} />
 
-            {/* Desktop Navigation Links if authenticated */}
-            {userEmail && (
+            {/* Desktop Navigation Links */}
+            {userEmail ? (
               <nav className="hidden lg:flex items-center gap-1">
                 {navLinks.map((link) => {
                   const isActive =
@@ -106,6 +106,41 @@ export function Navbar({ userEmail, profile }: NavbarProps) {
                     </Link>
                   );
                 })}
+              </nav>
+            ) : (
+              <nav className="hidden md:flex items-center gap-1">
+                <Link
+                  href="/#features"
+                  className="px-3 py-1.5 text-xs font-medium text-[#667085] hover:text-[#0B1220] dark:text-slate-300 dark:hover:text-[#F6F8FB] hover:bg-slate-50 dark:hover:bg-slate-850 rounded-lg transition-colors"
+                >
+                  Features
+                </Link>
+                <Link
+                  href="/#how-it-works"
+                  className="px-3 py-1.5 text-xs font-medium text-[#667085] hover:text-[#0B1220] dark:text-slate-300 dark:hover:text-[#F6F8FB] hover:bg-slate-50 dark:hover:bg-slate-850 rounded-lg transition-colors"
+                >
+                  How it works
+                </Link>
+                <Link
+                  href="/#trust"
+                  className="px-3 py-1.5 text-xs font-medium text-[#667085] hover:text-[#0B1220] dark:text-slate-300 dark:hover:text-[#F6F8FB] hover:bg-slate-50 dark:hover:bg-slate-850 rounded-lg transition-colors"
+                >
+                  Trust & Safety
+                </Link>
+                <Link
+                  href="/#download"
+                  className="px-3 py-1.5 text-xs font-medium text-[#4F8CFF] hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors"
+                >
+                  Android APK
+                </Link>
+                <a
+                  href="https://github.com/bhavyaku11/PRISM---Application"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 text-xs font-medium text-[#667085] hover:text-[#0B1220] dark:text-slate-300 dark:hover:text-[#F6F8FB] hover:bg-slate-50 dark:hover:bg-slate-850 rounded-lg transition-colors"
+                >
+                  GitHub
+                </a>
               </nav>
             )}
           </div>
@@ -224,62 +259,120 @@ export function Navbar({ userEmail, profile }: NavbarProps) {
               </div>
             )}
 
-            {/* Mobile Hamburger toggle if authenticated */}
-            {userEmail && (
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-                aria-label="Toggle navigation menu"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
-            )}
+            {/* Mobile Hamburger toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#4F8CFF]/50"
+              aria-label="Toggle navigation menu"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && userEmail && (
-        <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1220] px-4 pt-3 pb-5 space-y-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              {link.name}
-            </Link>
-          ))}
-          <Link
-            href="/notifications"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            <span>Notifications</span>
-            {unreadCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#4F8CFF] text-white">
-                {unreadCount}
-              </span>
-            )}
-          </Link>
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={handleSignOut}
-              disabled={loggingOut}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg"
-            >
-              {loggingOut ? 'Signing out...' : 'Sign out'}
-            </button>
-          </div>
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1220] px-4 pt-3 pb-5 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150">
+          {userEmail ? (
+            <>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <Link
+                href="/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#4F8CFF] text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  disabled={loggingOut}
+                  className="w-full text-left px-3 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg"
+                >
+                  {loggingOut ? 'Signing out...' : 'Sign out'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/#features"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Features
+              </Link>
+              <Link
+                href="/#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                How it works
+              </Link>
+              <Link
+                href="/#trust"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Trust & Safety
+              </Link>
+              <Link
+                href="/#download"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-[#4F8CFF] hover:bg-blue-50 dark:hover:bg-blue-950/40"
+              >
+                Download Android APK
+              </Link>
+              <a
+                href="https://github.com/bhavyaku11/PRISM---Application"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-[#0B1220] dark:text-[#F6F8FB] hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                GitHub Repository
+              </a>
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 text-xs font-medium text-[#0B1220] dark:text-[#F6F8FB] border border-slate-200 dark:border-slate-700 rounded-xl"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 text-xs font-medium text-white bg-[#0B1220] dark:bg-[#4F8CFF] rounded-xl"
+                >
+                  Get started
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       )}
     </header>

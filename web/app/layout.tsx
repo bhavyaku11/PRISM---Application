@@ -10,7 +10,20 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "PRISM — AI Insurance Companion",
   description:
-    "Understand your health insurance before you need it, and be better prepared when you need to use it.",
+    "PRISM helps you understand your health-insurance policy, ask grounded questions, organize documents, and prepare for claims.",
+  openGraph: {
+    title: "PRISM — AI Insurance Companion",
+    description:
+      "PRISM helps you understand your health-insurance policy, ask grounded questions, organize documents, and prepare for claims.",
+    type: "website",
+    siteName: "PRISM",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PRISM — AI Insurance Companion",
+    description:
+      "PRISM helps you understand your health-insurance policy, ask grounded questions, organize documents, and prepare for claims.",
+  },
 };
 
 export default function RootLayout({
