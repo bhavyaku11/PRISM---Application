@@ -1,0 +1,112 @@
+import React from 'react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { Navbar } from '@/components/layout/Navbar';
+import { PolicyProcessingView } from '@/components/policies/PolicyProcessingView';
+import type { Profile } from '@/types/auth';
+import type { Policy, PolicyDocument } from '@/types/policy';
+
+export const metadata: Metadata = {
+  title: 'Processing Policy — PRISM Insurance Companion',
+  description: 'Track the ingestion and processing status of your uploaded insurance policy document.',
+};
+
+export default async function PolicyProcessingPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(`/login?next=/processing/${id}`);
+  }
+
+  // Fetch user profile
+  let profile: Profile | null = null;
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle();
+  profile = profileData as Profile | null;
+
+  // Query policy record ensuring user owns it via RLS and user_id check
+  const { data: policyData, error: policyError } = await supabase
+    .from('policies')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  // Query associated document record
+  const { data: docData } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('policy_id', id)
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (policyError || !policyData) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#F6F8FB] dark:bg-[#0B1220]">
+        <Navbar userEmail={user.email} profile={profile} />
+
+        <main className="flex-1 max-w-md w-full mx-auto px-4 py-16 flex flex-col items-center justify-center text-center">
+          <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4 border border-amber-200/60 dark:border-amber-900/50">
+            <svg
+              className="w-7 h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+
+          <h1 className="text-xl font-bold text-[#0B1220] dark:text-[#F6F8FB]">
+            Policy Not Found
+          </h1>
+
+          <p className="mt-2 text-sm text-[#667085] dark:text-slate-400 leading-relaxed">
+            We could not find this policy in your account, or you do not have permission to view it.
+          </p>
+
+          <div className="mt-6">
+            <Link
+              href="/dashboard"
+              className="h-10 px-5 inline-flex items-center justify-center font-medium text-xs rounded-xl text-white bg-[#0B1220] hover:bg-[#162A46] dark:bg-[#4F8CFF] dark:hover:bg-[#3d7ae8] transition-colors shadow-sm"
+            >
+              Return to Dashboard
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const policy = policyData as Policy;
+  const document = docData as PolicyDocument | null;
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#F6F8FB] dark:bg-[#0B1220]">
+      <Navbar userEmail={user.email} profile={profile} />
+
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <PolicyProcessingView policy={policy} document={document} />
+      </main>
+    </div>
+  );
+}
