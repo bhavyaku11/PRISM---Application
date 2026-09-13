@@ -498,7 +498,7 @@ export function LandingView({ userEmail }: LandingViewProps) {
             PRISM for Android
           </h2>
           <p className="mt-2 text-base text-[#667085] dark:text-slate-300">
-            Take your insurance companion with you.
+            Take your insurance companion with you. PRISM is currently available as an early Android beta.
           </p>
 
           {/* Download Box */}
@@ -508,11 +508,11 @@ export function LandingView({ userEmail }: LandingViewProps) {
                 <div className="text-lg font-bold text-[#0B1220] dark:text-white flex items-center gap-2">
                   <span>PRISM Android Release APK</span>
                   <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-semibold">
-                    v1.0.0
+                    v1.0.0 Beta
                   </span>
                 </div>
                 <p className="text-xs text-[#667085] dark:text-slate-400 mt-1">
-                  Universal release package &middot; Direct APK distribution
+                  Universal release package &middot; Direct APK distribution &middot; Early Beta
                 </p>
               </div>
 
